@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-name: Build and Push Image
+name: Build and Push NemoClaw Image
 
 on:
   push:
@@ -17,6 +17,11 @@ jobs:
       packages: write
 
     steps:
+      - name: Set lowercase repository owner
+        id: lowercase
+        run: |
+          echo "gh_owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
       - name: Checkout repository
         uses: actions/checkout@v6
 
@@ -37,7 +42,7 @@ jobs:
       - name: Build and push image
         run: |
           docker buildx build \
-            --tag ghcr.io/${{ github.repository_owner }}/nemoclaw:latest \
-            --tag ghcr.io/${{ github.repository_owner }}/nemoclaw:${{ steps.sha.outputs.sha }} \
+            --tag ghcr.io/${{ steps.lower.outputs.gh_owner }}/nemoclaw:latest \
+            --tag ghcr.io/${{ steps.lower.outputs.gh_owner }}/nemoclaw:${{ steps.sha.outputs.sha }} \
             --push \
             .
