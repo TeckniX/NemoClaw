@@ -1,4 +1,4 @@
-.PHONY: check lint format lint-ts format-ts docs docs-strict docs-live docs-clean
+.PHONY: check lint format lint-ts format-ts docs docs-strict docs-live docs-clean image image-base push push-base
 
 check:
 	npx prek run --all-files
@@ -17,6 +17,42 @@ format-cli:
 
 format-ts:
 	cd nemoclaw && npm run lint:fix && npm run format
+
+# --- Docker images (buildx) ---
+
+OWNER?=nvidia
+IMAGE_REGISTRY?=ghcr.io
+IMAGE_NAME:=$(IMAGE_REGISTRY)/$(OWNER)/nemoclaw
+IMAGE_TAG:=$(shell git rev-parse --short HEAD)
+IMAGE_BASE_NAME:=$(IMAGE_REGISTRY)/$(OWNER)/nemoclaw-base
+
+image:
+	docker buildx build \
+		--tag $(IMAGE_NAME):latest \
+		--tag $(IMAGE_NAME):$(IMAGE_TAG) \
+		--load \
+		.
+
+image-base:
+	docker buildx build \
+		--file Dockerfile.base \
+		--tag $(IMAGE_BASE_NAME):latest \
+		--load \
+		.
+
+push:
+	docker buildx build \
+		--tag $(IMAGE_NAME):latest \
+		--tag $(IMAGE_NAME):$(IMAGE_TAG) \
+		--push \
+		.
+
+push-base:
+	docker buildx build \
+		--file Dockerfile.base \
+		--tag $(IMAGE_BASE_NAME):latest \
+		--push \
+		.
 
 # --- Documentation ---
 
