@@ -42,7 +42,7 @@ jobs:
       - name: Build and push image
         run: |
           docker buildx build \
-            --tag ghcr.io/${{ steps.lower.outputs.gh_owner }}/nemoclaw:latest \
-            --tag ghcr.io/${{ steps.lower.outputs.gh_owner }}/nemoclaw:${{ steps.sha.outputs.sha }} \
+            --tag ghcr.io/${{ steps.lowercase.outputs.gh_owner }}/nemoclaw:latest \
+            --tag ghcr.io/${{ steps.lowercase.outputs.gh_owner }}/nemoclaw:${{ steps.sha.outputs.sha }} \
             --push \
             .
